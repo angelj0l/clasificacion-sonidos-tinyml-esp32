@@ -23,11 +23,11 @@
 // ==========================================
 // CONFIGURACIÓN DE RED Y SERVIDOR
 // ==========================================
-const char* ssid = "TV MOJANA";
-const char* password = "Condorito25";
+const char* ssid = "*****";
+const char* password = "******";
 
 // URL de tu backend 
-const char* serverName = "http://192.168.1.2:5000/api/guardar_inferencia"; // Reemplazar por dirección IPv4
+const char* serverName = "*************"; //servidor 
 
 // ==========================================
 // CONFIGURACIÓN DE AUDIO E I2S
@@ -43,10 +43,10 @@ const char* serverName = "http://192.168.1.2:5000/api/guardar_inferencia"; // Re
 // ==========================================
 // CONFIGURACIÓN DEL ESPECTROGRAMA E IA
 // ==========================================
-#define N_MELS 26    // Corregido a N_MELS según la nomenclatura académica
+#define N_MELS 26   
 #define N_FRAMES 301
 
-// 🔴 PARÁMETROS DE CUANTIZACIÓN 
+// PARÁMETROS DE CUANTIZACIÓN 
 const float input_scale = 0.0036601307801902294f; 
 const int input_zero_point = -128;   
 
@@ -271,7 +271,7 @@ void setup() {
     audio_buffer = (int16_t*) ps_malloc(TOTAL_SAMPLES * sizeof(int16_t));
     mel = (float (*)[N_FRAMES]) ps_malloc(N_MELS * N_FRAMES * sizeof(float));
     
-    // 🚀 NUEVO: Mandamos el "cerebro" matemático a la memoria masiva
+    // Mandamos el modelo a la PSRAM
     tensor_arena = (uint8_t*) ps_malloc(kTensorArenaSize);
     
     if (audio_buffer == NULL || mel == NULL || tensor_arena == NULL) {
@@ -339,7 +339,7 @@ void loop() {
     Serial.print("OK ("); Serial.print(millis() - t4); Serial.println(" ms)");
 
     // =========================================================
-    // 5. OBTENCIÓN DE RESULTADOS (Con Estiramiento de Temperatura)
+    // 5. OBTENCIÓN DE RESULTADOS
     // =========================================================
     float output_scale = output->params.scale;
     int output_zero_point = output->params.zero_point;
@@ -351,7 +351,7 @@ void loop() {
     
     Serial.println("\n----------------------------------");
     
-    // A. Leer y aplicar factor de temperatura (T = 15.0) para "desaplastar" el Softmax INT8
+    // A. Leer y aplicar factor de temperatura (T = 15.0)
     for (int i = 0; i < 3; i++) {
         int8_t out_val = output->data.int8[i];
         
@@ -386,7 +386,7 @@ void loop() {
 
 
     // >>> ENVIAR TODOS LOS DATOS POR WI-FI <<<
-    // Según tu arreglo CLASSES, el índice 0 es Música, 1 es Tráfico, y 2 es Neutro 
+    // Según arreglo CLASSES, el índice 0 es Música, 1 es Tráfico, y 2 es Neutro 
     sendDataToCloud(CLASSES[max_index], porcentajes_finales[0], porcentajes_finales[1], porcentajes_finales[2]);
 
     Serial.printf("⏱️ TIEMPO TOTAL DE CICLO: %lu ms\n", (millis() - time_start_total)); 
